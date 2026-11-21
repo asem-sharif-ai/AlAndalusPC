@@ -82,7 +82,7 @@ export default function MaintenancePage({ lang, title, search }) {
         <h1 className="text-2xl font-bold">{title}</h1>
         <div className="flex flex-wrap items-center gap-2">
           <button type="button" className={BTN} onClick={() => setStorage({})}>
-            <GridIcon /> {t.storage.open}
+            <GridIcon /> <span className="hidden sm:inline">{t.storage.open}</span>
           </button>
           <button type="button" className={BTN_PRIMARY} onClick={() => setEditor(true)}>
             <Ico name="plus" /> {t.add}
