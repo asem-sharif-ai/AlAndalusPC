@@ -1,0 +1,365 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true"
+  focusable="false">
+
+  <style>
+    :root {
+      --dark: 1;
+      --lang: 1;
+      --menu: 0;
+      --search: 0;
+    }
+
+    :root.dark,
+    :root[data-theme="dark"] {
+      --dark: 0;
+    }
+
+    :root[lang="ar"] {
+      --lang: 0;
+    }
+
+    .menu-open {
+      --menu: 1;
+    }
+
+    .search-open {
+      --search: 1;
+    }
+
+    .ti-e,
+    .li-e {
+      transition-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .ti-e,
+      .ti-e *,
+      .li-e,
+      .li-e *,
+      .mi-e,
+      .mi-e *,
+      .sx-e,
+      .sx-e * {
+        transition-duration: .01s !important;
+        transition-delay: 0s !important;
+      }
+    }
+
+    /* ---------- Theme toggle (sun <-> moon), outline only ---------- */
+    /* body = disc + moon edge. It grows in dark mode so the moon isn't tiny next to the sun */
+    .ti-body {
+      transform-origin: 24px 24px;
+      transform: scale(calc(1 + .7*var(--dark, 0)));
+      transition: transform .75s cubic-bezier(.7, 0, .2, 1) calc(.2s*var(--dark, 0));
+    }
+
+    .ti-disc,
+    .ti-edge {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .ti-shade {
+      transform: translate(calc(18px - 14.8px*var(--dark, 0)), calc(-4px - .6px*var(--dark, 0)));
+      transition: transform .75s cubic-bezier(.7, 0, .2, 1) calc(.2s*var(--dark, 0));
+    }
+
+    .ti-r {
+      transform-origin: 24px 24px;
+      transform: rotate(calc(var(--i)*45deg));
+    }
+
+    .ti-r line {
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      transform: translateY(calc(3px*var(--dark, 0))) scaleY(calc(1 - .99*var(--dark, 0)));
+      opacity: calc(1 - var(--dark, 0));
+      transition: transform .5s cubic-bezier(.7, 0, .2, 1), opacity .5s cubic-bezier(.7, 0, .2, 1);
+      transition-delay: calc(.3s*(1 - var(--dark, 0)) + var(--i)*25ms);
+    }
+
+    /* ---------- Language toggle (EN <-> AR) ---------- */
+    .li-glyph {
+      fill: currentColor;
+    }
+
+    .li-mask path {
+      fill: none;
+      stroke: #fff;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #li-pEN,
+    #li-pAR {
+      transition-property: stroke-dasharray, stroke-dashoffset, visibility;
+      transition-duration: .57s;
+      transition-timing-function: cubic-bezier(.65, 0, .35, 1);
+    }
+
+    #li-pEN {
+      stroke-dasharray: calc(100 - 99.99*var(--lang, 0)) 300;
+      stroke-dashoffset: calc(-100*var(--lang, 0));
+      transition-delay: calc(.93s*(1 - var(--lang, 0)));
+      visibility: hidden;
+    }
+
+    #li-pAR {
+      stroke-dasharray: calc(.01 + 99.99*var(--lang, 0)) 300;
+      stroke-dashoffset: 0;
+      transition-delay: calc(.93s*var(--lang, 0));
+      visibility: visible;
+    }
+
+    :root[lang="ar"] #li-pAR {
+      visibility: hidden;
+    }
+
+    :root[lang="ar"] #li-pEN {
+      visibility: visible;
+    }
+
+    /* ---------- Menu toggle (burger to X) ---------- */
+    .mi-box,
+    .mi-bar,
+    .mi-mid {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+    }
+
+    /* border: two halves growing out of the dot, one up and one down */
+    .mi-box {
+      stroke-width: 2.5;
+      stroke-linecap: butt;
+      stroke-dasharray: calc(100*var(--menu, 0)) 100;
+      transition: stroke-dasharray .5s cubic-bezier(.65, 0, .35, 1);
+      transition-delay: calc(.3s*var(--menu, 0));
+    }
+
+    /* top / bottom dashes: move to the centre and rotate in opposite directions */
+    .mi-bar {
+      stroke-width: 3;
+      transform-origin: 24px 24px;
+      transition: transform .5s cubic-bezier(.65, 0, .35, 1);
+    }
+
+    .mi-top {
+      transform: rotate(calc(45deg*var(--menu, 0))) translateY(calc(8px*var(--menu, 0)));
+    }
+
+    .mi-bot {
+      transform: rotate(calc(-45deg*var(--menu, 0))) translateY(calc(-8px*var(--menu, 0)));
+    }
+
+    /* middle dash: drawn right to left, so it shrinks into a dot on the right,
+       slides onto the border and thins to the border's width */
+    .mi-mid {
+      stroke-width: calc(3 - .5*var(--menu, 0));
+      stroke-dasharray: calc(24 - 24*var(--menu, 0)) 24;
+      transform: translateX(calc(8px*var(--menu, 0)));
+      transition: stroke-dasharray .35s cubic-bezier(.65, 0, .35, 1),
+        transform .35s cubic-bezier(.65, 0, .35, 1),
+        stroke-width .35s cubic-bezier(.65, 0, .35, 1);
+      transition-delay: calc(.5s*(1 - var(--menu, 0)));
+    }
+
+    /* ---------- Search toggle (search to X, drawn like a pen) ---------- */
+    .sx-lens,
+    .sx-hold,
+    .sx-tail,
+    .sx-inner,
+    .sx-slash {
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* lens: un-draws back to the handle junction, re-draws on the way back */
+    .sx-lens {
+      stroke-width: 2.4;
+      stroke-dasharray: 1 2;
+      stroke-dashoffset: calc(1.001*var(--search, 0));
+      transition: stroke-dashoffset .38s cubic-bezier(.65, 0, .35, 1);
+      transition-delay: calc(.45s*(1 - var(--search, 0)));
+    }
+
+    /* The handle is split at the X's lower-right arm so that arm never changes:
+       hold  : 28.2 -> 32.5, shared by the handle and the X arm. Always drawn, never animated.
+       tail  : 32.5 -> 36.5, handle end beyond the X. Retracts away (the only part that goes).
+       inner : 24 -> 28.2, rest of the X arm. Draws in once the lens has un-drawn.
+       ul    : 24 -> 15.5, upper-left arm, grows out of the centre. */
+    .sx-hold {
+      stroke-width: 2.4;
+    }
+
+    .sx-tail {
+      stroke-width: 2.4;
+      stroke-dasharray: 1 2;
+      stroke-dashoffset: calc(-1.001*var(--search, 0));
+      transition: stroke-dashoffset .2s cubic-bezier(.65, 0, .35, 1);
+      transition-delay: calc(.36s*(1 - var(--search, 0)));
+    }
+
+    .sx-inner {
+      stroke-width: 2.4;
+      stroke-dasharray: 1 2;
+      stroke-dashoffset: calc(1.001 - 1.001*var(--search, 0));
+      transition: stroke-dashoffset .14s cubic-bezier(.65, 0, .35, 1);
+      transition-delay: calc(.36s*var(--search, 0) + .22s*(1 - var(--search, 0)));
+    }
+
+    /* "/" of the X: two halves growing out of the centre as the pen crosses it */
+    .sx-slash {
+      stroke-width: 2.4;
+      stroke-dasharray: 1 2;
+      stroke-dashoffset: calc(1.001 - 1.001*var(--search, 0));
+      transition: stroke-dashoffset .22s cubic-bezier(.65, 0, .35, 1);
+      transition-delay: calc(.5s*var(--search, 0));
+    }
+
+    /* ---------- Stroke icons (search, close) ---------- */
+    .si-stroke {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 40;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ---------- Outline icons (account, wishlist, cart) ---------- */
+    .oi-outline {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 40;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .oi-dot {
+      fill: currentColor;
+      stroke: none;
+    }
+  </style>
+
+  <defs>
+    <mask id="li-mEN" class="li-mask" maskUnits="userSpaceOnUse" x="-10" y="-10" width="70" height="70">
+      <path id="li-pEN" pathLength="100" d="M19.34 15.55H8.78V32.45H19.48M8.78 23.78H18.47M26.2 32.45V15.55L39.2 32.45V15.55" />
+    </mask>
+    <mask id="li-mAR" class="li-mask" maskUnits="userSpaceOnUse" x="-10" y="-10" width="70" height="70">
+      <path id="li-pAR" pathLength="100"
+        d="M39.3 13.7C33.5 11.9 28.65 14.5 28.65 19.8V26.46H40.15H17.12V13.2V29C17.12 34 12.5 35.5 8.59 33.9" />
+    </mask>
+    <mask id="ti-m">
+      <rect x="-20" y="-20" width="90" height="90" fill="#fff" />
+      <circle class="ti-shade ti-e" cx="24" cy="24" r="5.4" fill="#000" />
+    </mask>
+    <clipPath id="ti-c">
+      <circle cx="24" cy="24" r="6.5" />
+    </clipPath>
+  </defs>
+
+  <symbol id="theme-toggle" viewBox="0 0 48 48">
+    <g class="ti-e">
+      <g>
+        <g class="ti-r" style="--i:0">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+        <g class="ti-r" style="--i:1">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+        <g class="ti-r" style="--i:2">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+        <g class="ti-r" style="--i:3">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+        <g class="ti-r" style="--i:4">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+        <g class="ti-r" style="--i:5">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+        <g class="ti-r" style="--i:6">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+        <g class="ti-r" style="--i:7">
+          <line x1="24" x2="24" y1="10" y2="13" />
+        </g>
+      </g>
+      <g class="ti-body">
+        <circle class="ti-disc" cx="24" cy="24" r="6.5" mask="url(#ti-m)" />
+        <g clip-path="url(#ti-c)">
+          <circle class="ti-edge ti-shade ti-e" cx="24" cy="24" r="5.4" />
+        </g>
+      </g>
+    </g>
+  </symbol>
+
+  <symbol id="language-toggle" viewBox="0 0 48 48">
+    <rect class="li-glyph" x="-10" y="-10" width="70" height="70" mask="url(#li-mEN)" />
+    <rect class="li-glyph" x="-10" y="-10" width="70" height="70" mask="url(#li-mAR)" />
+  </symbol>
+
+  <symbol id="menu-toggle" viewBox="0 0 48 48">
+    <g class="mi-e">
+      <path class="mi-box" pathLength="100" d="M44 24V34A10 10 0 0 1 34 44H14A10 10 0 0 1 4 34V24" />
+      <path class="mi-box" pathLength="100" d="M44 24V14A10 10 0 0 0 34 4H14A10 10 0 0 0 4 14V24" />
+      <line class="mi-bar mi-top" x1="12" y1="16" x2="36" y2="16" />
+      <line class="mi-mid" x1="36" y1="24" x2="12" y2="24" />
+      <line class="mi-bar mi-bot" x1="12" y1="32" x2="36" y2="32" />
+    </g>
+  </symbol>
+
+  <symbol id="search-toggle" viewBox="0 0 48 48">
+    <g class="sx-e">
+      <path class="sx-lens" pathLength="1" d="M28.218 28.218A9.5 9.5 0 1 1 14.782 14.782A9.5 9.5 0 0 1 28.218 28.218" />
+      <path class="sx-hold" d="M32.485 32.485L28.218 28.218" />
+      <path class="sx-tail" pathLength="1" d="M36.5 36.5L32.485 32.485" />
+      <path class="sx-inner" pathLength="1" d="M28.218 28.218L24 24" />
+      <path class="sx-slash" pathLength="1" d="M24 24L15.515 15.515" />
+      <path class="sx-slash" pathLength="1" d="M24 24L32.485 15.515" />
+      <path class="sx-slash" pathLength="1" d="M24 24L15.515 32.485" />
+    </g>
+  </symbol>
+
+  <symbol id="search" viewBox="0 0 640 640">
+    <circle class="si-stroke" cx="280" cy="280" r="176" />
+    <path class="si-stroke" d="M408 408L548 548" />
+  </symbol>
+
+  <symbol id="close" viewBox="0 0 640 640">
+    <path class="si-stroke" d="M160 160L480 480M480 160L160 480" />
+  </symbol>
+
+  <symbol id="account" viewBox="0 0 640 640">
+    <path class="oi-outline"
+      d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z" />
+  </symbol>
+
+  <symbol id="wishlist" viewBox="0 0 640 640">
+    <path class="oi-outline"
+      d="M305 151.1L320 171.8L335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1L576 231.7C576 343.9 436.1 474.2 363.1 529.9C350.7 539.3 335.5 544 320 544C304.5 544 289.2 539.4 276.9 529.9C203.9 474.2 64 343.9 64 231.7L64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1z" />
+  </symbol>
+
+  <symbol id="cart" viewBox="0 0 640 640">
+    <path class="oi-outline"
+      d="M256 144C256 108.7 284.7 80 320 80C355.3 80 384 108.7 384 144L384 192L256 192L256 144zM208 192L144 192C117.5 192 96 213.5 96 240L96 448C96 501 139 544 192 544L448 544C501 544 544 501 544 448L544 240C544 213.5 522.5 192 496 192L432 192L432 144C432 82.1 381.9 32 320 32C258.1 32 208 82.1 208 144L208 192z" />
+    <path class="oi-dot"
+      d="M232 240C245.3 240 256 250.7 256 264C256 277.3 245.3 288 232 288C218.7 288 208 277.3 208 264C208 250.7 218.7 240 232 240z" />
+    <path class="oi-dot"
+      d="M384 264C384 250.7 394.7 240 408 240C421.3 240 432 250.7 432 264C432 277.3 421.3 288 408 288C394.7 288 384 277.3 384 264z" />
+  </symbol>
+
+</svg>
